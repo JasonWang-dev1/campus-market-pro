@@ -1,0 +1,36 @@
+# ===== Java / Maven =====
+campus-market/target/
+campus-market/*.jar
+campus-market/*.war
+campus-market/logs/
+*.class
+*.log
+hs_err_pid*
+
+# ===== Node / Vue =====
+campus-market-front/node_modules/
+campus-market-front/dist/
+campus-market-front/.vite/
+
+# ===== IDE =====
+.vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+*~
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+
+# ===== Env =====
+.env
+.env.local
+*.local
+
+# ===== Claude =====
+.claude/
+
+# ===== Misc =====
+cleanup.bat
