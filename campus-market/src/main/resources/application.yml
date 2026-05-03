@@ -47,9 +47,17 @@ jwt:
   secret: WTJNVUtpQ1dXcnBFSDJRT2FQREd5ck5jR3JpdmFISzJNREZFV0dOc0hkaz0=
   expiration: 86400
 
-# ===== AI =====
+# ===== AI（商品描述生成，本地模型）=====
 ai:
   api-base-url: http://localhost:11434/v1
   model: qwen2.5:7b
   temperature: 0.7
   max-tokens: 500
+
+# ===== DeepSeek（Agent 智能体规划）=====
+deepseek:
+  api-key: sk-your-deepseek-api-key
+  api-base-url: https://api.deepseek.com/v1
+  model: deepseek-chat
+  temperature: 0.1
+  max-tokens: 4096
