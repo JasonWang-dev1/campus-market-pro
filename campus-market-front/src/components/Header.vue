@@ -10,7 +10,8 @@
         <router-link to="/home">首页</router-link>
         <router-link to="/products">商品列表</router-link>
         <router-link v-if="userStore.isLoggedIn" to="/products/add">发布商品</router-link>
-        <router-link v-if="userStore.isLoggedIn" to="/ai">AI 助手</router-link>
+        <router-link v-if="userStore.isLoggedIn" to="/agent">AI 智能助手</router-link>
+        <router-link v-if="userStore.isLoggedIn" to="/ai">AI 描述</router-link>
       </nav>
 
       <div class="user-area">

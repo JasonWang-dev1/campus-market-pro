@@ -12,6 +12,7 @@ export {
   deleteProduct
 } from './product'
 export { generateDescription } from './ai'
+export { executeAgent } from './agent'
 
 /* ---- 后续模块在此扩展 ---- */
 // export { ... } from './user-center'

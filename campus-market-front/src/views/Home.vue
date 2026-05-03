@@ -122,7 +122,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ShoppingCart, Picture, Loading, Goods, ChatDotSquare, EditPen } from '@element-plus/icons-vue'
+import { ShoppingCart, Picture, Loading, Goods, Cpu, EditPen } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import Header from '../components/Header.vue'
 import { useUserStore } from '../stores/user'
@@ -133,7 +133,7 @@ import { firstImage, imageList, formatTime } from '../utils'
 const entries = [
   { title: '浏览商品', desc: '发现校园好物', icon: Goods, color: '#409eff', path: '/products' },
   { title: '发布闲置', desc: '轻松出售物品', icon: EditPen, color: '#67c23a', path: '/products/add' },
-  { title: 'AI 助手', desc: '智能生成描述', icon: ChatDotSquare, color: '#e6a23c', path: '/ai' }
+  { title: '智能助手', desc: 'AI 自动执行指令', icon: Cpu, color: '#e6a23c', path: '/agent' }
 ]
 
 // ========== 状态 ==========

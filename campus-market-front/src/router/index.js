@@ -41,6 +41,12 @@ const routes = [
     name: 'AIPage',
     component: () => import('../views/AIPage.vue'),
     meta: { title: 'AI 生成描述', requiresAuth: true }
+  },
+  {
+    path: '/agent',
+    name: 'AgentPage',
+    component: () => import('../views/AgentPage.vue'),
+    meta: { title: 'AI 智能助手', requiresAuth: true }
   }
   /* ---- 后续模块在此扩展 ---- */
   // {
