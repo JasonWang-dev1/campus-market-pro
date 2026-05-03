@@ -8,10 +8,9 @@
 
       <nav class="nav">
         <router-link to="/home">首页</router-link>
-        <router-link to="/products">商品列表</router-link>
-        <router-link v-if="userStore.isLoggedIn" to="/products/add">发布商品</router-link>
-        <router-link v-if="userStore.isLoggedIn" to="/agent">AI 智能助手</router-link>
-        <router-link v-if="userStore.isLoggedIn" to="/ai">AI 描述</router-link>
+        <router-link to="/products">商品广场</router-link>
+        <router-link v-if="userStore.isLoggedIn" to="/products/add">发布闲置</router-link>
+        <router-link v-if="userStore.isLoggedIn" to="/agent">AI 助手</router-link>
       </nav>
 
       <div class="user-area">
@@ -22,7 +21,10 @@
               <span class="username">{{ userStore.userInfo?.nickname || userStore.userInfo?.username || '用户' }}</span>
             </span>
             <template #dropdown>
-              <el-dropdown-item @click="handleLogout">
+              <el-dropdown-item @click="router.push('/home')">
+                <el-icon><User /></el-icon>个人中心
+              </el-dropdown-item>
+              <el-dropdown-item divided @click="handleLogout">
                 <el-icon><SwitchButton /></el-icon>退出登录
               </el-dropdown-item>
             </template>
@@ -39,7 +41,7 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { useUserStore } from '../stores/user'
-import { UserFilled, SwitchButton, School } from '@element-plus/icons-vue'
+import { UserFilled, User, SwitchButton, School } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 
 const router = useRouter()

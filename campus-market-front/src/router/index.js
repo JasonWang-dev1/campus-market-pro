@@ -28,7 +28,13 @@ const routes = [
     path: '/products',
     name: 'ProductList',
     component: () => import('../views/ProductList.vue'),
-    meta: { title: '商品列表' }
+    meta: { title: '商品广场' }
+  },
+  {
+    path: '/products/:id(\\d+)',
+    name: 'ProductDetail',
+    component: () => import('../views/ProductDetail.vue'),
+    meta: { title: '商品详情' }
   },
   {
     path: '/products/add',
@@ -44,22 +50,24 @@ const routes = [
   },
   {
     path: '/agent',
-    name: 'AgentPage',
-    component: () => import('../views/AgentPage.vue'),
+    name: 'AgentInteraction',
+    component: () => import('../views/AgentInteraction.vue'),
     meta: { title: 'AI 智能助手', requiresAuth: true }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('../views/NotFound.vue'),
+    meta: { title: '页面不存在' }
   }
-  /* ---- 后续模块在此扩展 ---- */
-  // {
-  //   path: '/user',
-  //   name: 'UserCenter',
-  //   component: () => import('../views/UserCenter.vue'),
-  //   meta: { title: '个人中心', requiresAuth: true }
-  // }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  scrollBehavior() {
+    return { top: 0 }
+  }
 })
 
 // ========== 路由守卫 ==========

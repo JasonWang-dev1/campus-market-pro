@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 * {
   margin: 0;
   padding: 0;
@@ -6,11 +12,109 @@
 
 html, body, #app {
   height: 100%;
-  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
-  background-color: #f5f7fa;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background-color: #faf8f5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
   text-decoration: none;
   color: inherit;
+}
+
+/* ===== Shared Utilities ===== */
+
+/* Subtle warm card */
+.card-warm {
+  background: #ffffff;
+  border: 1px solid #e8e4df;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(245,158,11,0.02);
+  transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+}
+.card-warm:hover {
+  box-shadow: 0 8px 30px rgba(0,0,0,0.06), 0 4px 8px rgba(245,158,11,0.04);
+  border-color: #d4cdc4;
+  transform: translateY(-2px);
+}
+
+/* AI accent glow */
+.ai-glow {
+  box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+  animation: ai-glow-pulse 3s ease-in-out infinite;
+}
+@keyframes ai-glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+  50% { box-shadow: 0 0 20px 4px rgba(245, 158, 11, 0.08); }
+}
+
+/* AI badge */
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #fffbeb;
+  color: #f59e0b;
+  border: 1px solid #fde68a;
+  letter-spacing: 0.02em;
+}
+
+/* Text truncate */
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Fade-in staggered helper */
+.stagger-1 { animation-delay: 0ms; }
+.stagger-2 { animation-delay: 80ms; }
+.stagger-3 { animation-delay: 160ms; }
+.stagger-4 { animation-delay: 240ms; }
+.stagger-5 { animation-delay: 320ms; }
+.stagger-6 { animation-delay: 400ms; }
+
+/* Warm scrollbar */
+.warm-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.warm-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.warm-scroll::-webkit-scrollbar-thumb {
+  background: #d4cdc4;
+  border-radius: 99px;
+}
+
+/* Glassmorphism for dark sections */
+.glass {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Agent page scrollbar */
+.agent-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.agent-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.agent-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.1);
+  border-radius: 99px;
+}
+
+/* Status dots (agent page) */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  display: inline-block;
 }

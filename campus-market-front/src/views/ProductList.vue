@@ -1,139 +1,143 @@
 <template>
-  <div class="product-list-page">
-    <Header />
+  <div class="min-h-screen bg-ai-bg">
+    <AIHeader />
 
-    <main class="pl-main">
-      <!-- 筛选栏 -->
-      <div class="pl-header">
-        <h1>商品列表</h1>
-        <div class="pl-filters">
-          <el-select
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 pb-28">
+      <!-- Page header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 class="font-display font-bold text-2xl sm:text-3xl text-ai-text">商品广场</h1>
+          <p v-if="total" class="text-sm text-ai-text-3 mt-1">共 {{ total }} 件商品</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="flex items-center gap-2">
+          <select
             v-model="filters.category"
-            placeholder="全部分类"
-            clearable
             @change="onSearch"
+            class="px-3.5 py-2 rounded-xl bg-white border border-ai-border text-sm text-ai-text outline-none focus:border-ai-accent/40 transition-colors appearance-none cursor-pointer"
           >
-            <el-option label="全部分类" value="" />
-            <el-option v-for="c in CATEGORIES" :key="c" :label="c" :value="c" />
-          </el-select>
-          <el-input
-            v-model="filters.keyword"
-            placeholder="搜索商品..."
-            :prefix-icon="Search"
-            clearable
-            class="search-input"
-            @clear="onSearch"
-            @keyup.enter="onSearch"
-          />
-          <el-button type="primary" :icon="Search" @click="onSearch">搜索</el-button>
+            <option value="">全部分类</option>
+            <option v-for="c in CATEGORIES" :key="c" :value="c">{{ c }}</option>
+          </select>
+          <div class="relative flex-1 sm:flex-initial">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ai-text-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <input
+              v-model="filters.keyword"
+              placeholder="搜索商品..."
+              class="pl-9 pr-3 py-2 rounded-xl bg-white border border-ai-border text-sm text-ai-text outline-none focus:border-ai-accent/40 transition-colors w-full sm:w-52"
+              @keydown.enter="onSearch"
+            />
+          </div>
         </div>
       </div>
 
-      <!-- 加载态 -->
-      <div v-if="loading" class="status-center">
-        <el-icon class="is-loading" :size="32"><Loading /></el-icon>
+      <!-- Loading -->
+      <div v-if="loading" class="flex justify-center py-20">
+        <div class="w-6 h-6 border-2 border-ai-border border-t-ai-accent rounded-full animate-spin"></div>
       </div>
 
-      <!-- 空态 -->
-      <div v-else-if="products.length === 0" class="status-center">
-        <el-empty description="暂无符合条件的商品" />
+      <!-- Empty -->
+      <div v-else-if="products.length === 0" class="text-center py-20">
+        <div class="w-20 h-20 mx-auto mb-5 rounded-3xl bg-ai-surface-2 flex items-center justify-center">
+          <svg class="w-10 h-10 text-ai-text-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+          </svg>
+        </div>
+        <p class="text-sm text-ai-text-3">没有找到匹配的商品</p>
+        <button @click="resetFilters" class="mt-3 text-sm font-medium text-ai-accent hover:underline">清除筛选条件</button>
       </div>
 
-      <!-- 商品网格 -->
-      <div v-else class="pl-grid">
-        <el-card
-          v-for="item in products"
+      <!-- Product grid -->
+      <div v-else class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+        <ProductCard
+          v-for="(item, i) in products"
           :key="item.id"
-          shadow="hover"
-          class="pl-card"
-          @click="showDetail(item)"
-        >
-          <div class="pl-card-img">
-            <el-image :src="firstImage(item.images)" fit="cover">
-              <template #error>
-                <div class="img-placeholder">
-                  <el-icon :size="36" color="#c0c4cc"><Picture /></el-icon>
-                </div>
-              </template>
-            </el-image>
-          </div>
-          <div class="pl-card-body">
-            <h3>{{ item.title }}</h3>
-            <p class="pl-price">¥{{ item.price }}</p>
-            <div class="pl-meta">
-              <span>{{ item.sellerName || '未知' }}</span>
-              <span>{{ item.viewCount || 0 }}浏览</span>
-            </div>
-          </div>
-        </el-card>
+          :product="item"
+          class="animate-card-in"
+          :style="{ animationDelay: (i * 60) + 'ms' }"
+        />
       </div>
 
-      <!-- 分页 -->
-      <div v-if="total > 0" class="pl-pagination">
-        <el-pagination
-          v-model:current-page="pagination.page"
-          v-model:page-size="pagination.size"
-          :total="total"
-          layout="prev, pager, next, total"
-          @current-change="fetchData"
-        />
+      <!-- Pagination -->
+      <div v-if="total > pagination.size" class="flex justify-center mt-10 gap-1.5">
+        <button
+          :disabled="pagination.page <= 1"
+          @click="goPage(pagination.page - 1)"
+          class="w-9 h-9 rounded-xl text-sm font-medium border border-ai-border text-ai-text-2 hover:bg-ai-surface-2 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          ←
+        </button>
+        <button
+          v-for="p in visiblePages"
+          :key="p"
+          @click="goPage(p)"
+          class="min-w-[36px] h-9 px-2 rounded-xl text-sm font-medium transition-all"
+          :class="p === pagination.page
+            ? 'bg-ai-text text-white'
+            : 'border border-ai-border text-ai-text-2 hover:bg-ai-surface-2'"
+        >
+          {{ p }}
+        </button>
+        <button
+          :disabled="pagination.page >= totalPages"
+          @click="goPage(pagination.page + 1)"
+          class="w-9 h-9 rounded-xl text-sm font-medium border border-ai-border text-ai-text-2 hover:bg-ai-surface-2 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          →
+        </button>
       </div>
     </main>
 
-    <!-- 详情弹窗 -->
-    <el-dialog v-model="detailVisible" :title="detail.title" width="640px" destroy-on-close>
-      <template v-if="detail.id">
-        <div class="detail-images">
-          <el-image
-            v-for="(img, idx) in imageList(detail.images)"
-            :key="idx"
-            :src="img"
-            fit="contain"
-            class="detail-img"
-          >
-            <template #error>
-              <div class="img-placeholder">
-                <el-icon :size="36" color="#c0c4cc"><Picture /></el-icon>
-              </div>
-            </template>
-          </el-image>
-        </div>
-        <div class="detail-price">¥{{ detail.price }}</div>
-        <div class="detail-desc">{{ detail.description || '暂无描述' }}</div>
-        <div class="detail-meta">
-          <span>卖家：{{ detail.sellerName || '未知' }}</span>
-          <span>分类：{{ detail.category || '未分类' }}</span>
-          <span>浏览：{{ detail.viewCount || 0 }}次</span>
-          <span>{{ formatTime(detail.createTime) }}</span>
-        </div>
-      </template>
-    </el-dialog>
+    <!-- AI Command Bar -->
+    <AICommandBar
+      :suggestions="['二手iPhone', '教科书', '数码产品']"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import { Search, Picture, Loading } from '@element-plus/icons-vue'
-import Header from '../components/Header.vue'
-import { getProductList, getProductDetail } from '../api/product'
-import { firstImage, imageList, formatTime, CATEGORIES } from '../utils'
+import { ref, reactive, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { getProductList } from '../api/product'
+import { CATEGORIES } from '../utils'
+import AIHeader from '../components/ai/AIHeader.vue'
+import ProductCard from '../components/ai/ProductCard.vue'
+import AICommandBar from '../components/ai/AICommandBar.vue'
 
-// ========== 状态 ==========
+const route = useRoute()
 const products = ref([])
 const loading = ref(true)
 const total = ref(0)
 
 const filters = reactive({
   category: '',
-  keyword: ''
+  keyword: '',
 })
 
 const pagination = reactive({
   page: 1,
-  size: 12
+  size: 12,
 })
 
-// ========== 数据加载 ==========
+const totalPages = computed(() => Math.ceil(total.value / pagination.size))
+
+const visiblePages = computed(() => {
+  const pages = []
+  const total = totalPages.value
+  const current = pagination.page
+  let start = Math.max(1, current - 2)
+  let end = Math.min(total, current + 2)
+  if (end - start < 4) {
+    if (start === 1) end = Math.min(total, start + 4)
+    else start = Math.max(1, end - 4)
+  }
+  for (let i = start; i <= end; i++) pages.push(i)
+  return pages
+})
+
 async function fetchData() {
   loading.value = true
   try {
@@ -141,7 +145,7 @@ async function fetchData() {
       page: pagination.page,
       size: pagination.size,
       ...(filters.category && { category: filters.category }),
-      ...(filters.keyword && { keyword: filters.keyword })
+      ...(filters.keyword && { keyword: filters.keyword }),
     }
     const res = await getProductList(params)
     products.value = res.data?.records || []
@@ -159,164 +163,27 @@ function onSearch() {
   fetchData()
 }
 
-onMounted(fetchData)
+function goPage(p) {
+  if (p < 1 || p > totalPages.value) return
+  pagination.page = p
+  fetchData()
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
 
-// ========== 详情 ==========
-const detailVisible = ref(false)
-const detail = ref({})
+function resetFilters() {
+  filters.category = ''
+  filters.keyword = ''
+  onSearch()
+}
 
-async function showDetail(item) {
-  try {
-    const res = await getProductDetail(item.id)
-    detail.value = res.data
-  } catch {
-    detail.value = item
+// Handle query params from search bar
+onMounted(() => {
+  if (route.query.keyword) {
+    filters.keyword = route.query.keyword
   }
-  detailVisible.value = true
-}
+  if (route.query.category) {
+    filters.category = route.query.category
+  }
+  fetchData()
+})
 </script>
-
-<style scoped>
-.product-list-page {
-  min-height: 100vh;
-  background: #f5f7fa;
-}
-
-.pl-main {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px 20px;
-}
-
-.pl-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.pl-header h1 {
-  font-size: 24px;
-}
-
-.pl-filters {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.search-input {
-  width: 240px;
-}
-
-.pl-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-}
-
-.pl-card {
-  cursor: pointer;
-  border-radius: 8px;
-  overflow: hidden;
-  transition: transform 0.2s;
-}
-
-.pl-card:hover {
-  transform: translateY(-4px);
-}
-
-.pl-card-img {
-  height: 180px;
-  background: #f5f7fa;
-}
-
-.pl-card-img .el-image {
-  width: 100%;
-  height: 100%;
-}
-
-.img-placeholder {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pl-card-body {
-  padding: 12px 0;
-}
-
-.pl-card-body h3 {
-  font-size: 15px;
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.pl-price {
-  font-size: 20px;
-  font-weight: 700;
-  color: #f56c6c;
-  margin: 8px 0;
-}
-
-.pl-meta {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: #909399;
-}
-
-.pl-pagination {
-  display: flex;
-  justify-content: center;
-  margin-top: 32px;
-}
-
-.status-center {
-  display: flex;
-  justify-content: center;
-  padding: 80px 0;
-}
-
-.detail-images {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-}
-
-.detail-img {
-  width: 180px;
-  height: 180px;
-  border-radius: 8px;
-  border: 1px solid #e4e7ed;
-}
-
-.detail-price {
-  font-size: 28px;
-  font-weight: 700;
-  color: #f56c6c;
-  margin-bottom: 12px;
-}
-
-.detail-desc {
-  font-size: 15px;
-  color: #606266;
-  line-height: 1.8;
-  margin-bottom: 16px;
-  white-space: pre-wrap;
-}
-
-.detail-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  font-size: 13px;
-  color: #909399;
-}
-</style>

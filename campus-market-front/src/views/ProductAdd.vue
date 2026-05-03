@@ -1,108 +1,181 @@
 <template>
-  <div class="add-page">
-    <Header />
+  <div class="min-h-screen bg-ai-bg">
+    <AIHeader />
 
-    <main class="add-main">
-      <el-card class="add-card">
-        <template #header>
-          <h2>发布商品</h2>
-        </template>
+    <main class="max-w-2xl mx-auto px-4 sm:px-6 py-8 pb-28">
+      <!-- Header -->
+      <div class="mb-8">
+        <h1 class="font-display font-bold text-2xl sm:text-3xl text-ai-text">发布闲置</h1>
+        <p class="text-sm text-ai-text-3 mt-1">填写商品信息，AI 可以帮你自动生成描述</p>
+      </div>
 
-        <el-form
-          ref="formRef"
-          :model="form"
-          :rules="rules"
-          label-width="100px"
-          size="large"
-        >
-          <el-form-item label="商品标题" prop="title">
-            <el-input
-              v-model="form.title"
-              placeholder="请输入商品标题"
-              maxlength="100"
-              show-word-limit
-            />
-          </el-form-item>
+      <!-- Form card -->
+      <div class="bg-white border border-ai-border rounded-3xl p-5 sm:p-8 shadow-warm">
+        <form @submit.prevent="handleSubmit" class="space-y-5 sm:space-y-6">
 
-          <el-form-item label="商品分类" prop="category">
-            <el-select v-model="form.category" placeholder="请选择分类" style="width:100%">
-              <el-option v-for="c in CATEGORIES" :key="c" :label="c" :value="c" />
-            </el-select>
-          </el-form-item>
-
-          <el-form-item label="价格" prop="price">
-            <el-input-number
-              v-model="form.price"
-              :min="0.01"
-              :precision="2"
-              :step="10"
-              style="width:200px"
-            />
-          </el-form-item>
-
-          <el-form-item label="原价">
-            <el-input-number
-              v-model="form.originalPrice"
-              :min="0"
-              :precision="2"
-              :step="10"
-              style="width:200px"
-            />
-          </el-form-item>
-
-          <el-form-item label="商品图片">
-            <div class="upload-tip">
-              <el-icon><Picture /></el-icon>
-              <span>输入图片URL，多个URL用逗号分隔</span>
+          <!-- Title with AI assist -->
+          <div>
+            <label class="block text-sm font-semibold text-ai-text mb-1.5">
+              商品标题 <span class="text-ai-danger">*</span>
+            </label>
+            <div class="flex gap-2">
+              <input
+                v-model="form.title"
+                placeholder="例如：iPhone 13 95新 校园自用"
+                maxlength="100"
+                class="flex-1 px-4 py-2.5 rounded-xl bg-ai-bg border border-ai-border text-sm text-ai-text outline-none focus:border-ai-accent/40 transition-colors placeholder:text-ai-text-3/50"
+              />
+              <button
+                type="button"
+                @click="goAI"
+                class="flex-shrink-0 px-3 rounded-xl text-xs font-semibold bg-ai-accent-soft text-ai-accent border border-ai-accent-border hover:bg-amber-100 transition-all flex items-center gap-1.5"
+              >
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                AI 生成
+              </button>
             </div>
-            <el-input
+          </div>
+
+          <!-- Category + Price row -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-ai-text mb-1.5">
+                分类 <span class="text-ai-danger">*</span>
+              </label>
+              <select
+                v-model="form.category"
+                class="w-full px-4 py-2.5 rounded-xl bg-ai-bg border border-ai-border text-sm text-ai-text outline-none focus:border-ai-accent/40 transition-colors appearance-none cursor-pointer"
+              >
+                <option value="" disabled>选择分类</option>
+                <option v-for="c in CATEGORIES" :key="c" :value="c">{{ c }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-ai-text mb-1.5">
+                价格 (¥) <span class="text-ai-danger">*</span>
+              </label>
+              <input
+                v-model.number="form.price"
+                type="number"
+                step="0.01"
+                min="0.01"
+                placeholder="0.00"
+                class="w-full px-4 py-2.5 rounded-xl bg-ai-bg border border-ai-border text-sm text-ai-text outline-none focus:border-ai-accent/40 transition-colors placeholder:text-ai-text-3/50"
+              />
+            </div>
+          </div>
+
+          <!-- Original price (optional) -->
+          <div>
+            <label class="block text-sm font-semibold text-ai-text mb-1.5">
+              原价 <span class="text-ai-text-3 font-normal">(可选)</span>
+            </label>
+            <input
+              v-model.number="form.originalPrice"
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="0.00"
+              class="w-full px-4 py-2.5 rounded-xl bg-ai-bg border border-ai-border text-sm text-ai-text outline-none focus:border-ai-accent/40 transition-colors placeholder:text-ai-text-3/50 sm:max-w-[200px]"
+            />
+          </div>
+
+          <!-- Images -->
+          <div>
+            <label class="block text-sm font-semibold text-ai-text mb-1.5">商品图片</label>
+            <p class="text-xs text-ai-text-3 mb-2">输入图片 URL，多个链接请用逗号分隔</p>
+            <input
               v-model="form.images"
-              type="textarea"
-              :rows="2"
-              placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg"
+              placeholder="https://example.com/image1.jpg"
+              class="w-full px-4 py-2.5 rounded-xl bg-ai-bg border border-ai-border text-sm text-ai-text outline-none focus:border-ai-accent/40 transition-colors placeholder:text-ai-text-3/50"
             />
-          </el-form-item>
-
-          <el-form-item label="商品描述" prop="description">
-            <el-input
-              v-model="form.description"
-              type="textarea"
-              :rows="6"
-              placeholder="请描述商品的使用情况、成色、交易方式等"
-            />
-            <div class="ai-hint">
-              <el-button link type="primary" :icon="MagicStick" @click="goAI">
-                使用 AI 智能生成描述
-              </el-button>
+            <!-- Image previews -->
+            <div v-if="imageUrls.length > 0" class="flex gap-2 mt-3 flex-wrap">
+              <div
+                v-for="(url, idx) in imageUrls"
+                :key="idx"
+                class="relative w-16 h-16 rounded-xl overflow-hidden border border-ai-border group"
+              >
+                <img :src="url" class="w-full h-full object-cover" @error="$event.target.style.display='none'" />
+                <button
+                  type="button"
+                  @click="removeImage(idx)"
+                  class="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-black/40 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
+              </div>
             </div>
-          </el-form-item>
+          </div>
 
-          <el-form-item>
-            <el-button type="primary" :loading="submitting" @click="handleSubmit">
-              {{ submitting ? '发布中...' : '立即发布' }}
-            </el-button>
-            <el-button @click="resetForm">重置</el-button>
-          </el-form-item>
-        </el-form>
-      </el-card>
+          <!-- Description with AI hint -->
+          <div>
+            <label class="block text-sm font-semibold text-ai-text mb-1.5">商品描述</label>
+            <textarea
+              v-model="form.description"
+              rows="5"
+              placeholder="描述商品的使用情况、成色、交易方式等..."
+              class="w-full px-4 py-2.5 rounded-xl bg-ai-bg border border-ai-border text-sm text-ai-text outline-none focus:border-ai-accent/40 transition-colors placeholder:text-ai-text-3/50 resize-y"
+            ></textarea>
+            <div class="flex items-center justify-between mt-1.5">
+              <span class="text-xs text-ai-text-3">建议填写详细描述，有助于更快成交</span>
+              <button
+                type="button"
+                @click="goAI"
+                class="text-xs font-medium text-ai-accent hover:underline flex items-center gap-1"
+              >
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                用 AI 生成描述
+              </button>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <div class="flex items-center gap-3 pt-2">
+            <button
+              type="submit"
+              :disabled="submitting"
+              class="flex-1 sm:flex-none px-8 py-2.5 rounded-xl text-sm font-semibold bg-ai-text text-white hover:bg-gray-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span v-if="submitting" class="flex items-center justify-center gap-2">
+                <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                发布中...
+              </span>
+              <span v-else>发布商品</span>
+            </button>
+            <button
+              type="button"
+              @click="resetForm"
+              class="px-6 py-2.5 rounded-xl text-sm font-medium text-ai-text-2 hover:text-ai-text border border-ai-border hover:bg-ai-surface-2 transition-all"
+            >
+              重置
+            </button>
+          </div>
+        </form>
+      </div>
     </main>
+
+    <AICommandBar />
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { Picture, MagicStick } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import Header from '../components/Header.vue'
 import { createProduct } from '../api/product'
 import { CATEGORIES } from '../utils'
+import AIHeader from '../components/ai/AIHeader.vue'
+import AICommandBar from '../components/ai/AICommandBar.vue'
 
 const router = useRouter()
 const route = useRoute()
-
-// ========== 表单 ==========
-const formRef = ref(null)
 const submitting = ref(false)
 
 const form = reactive({
@@ -111,85 +184,68 @@ const form = reactive({
   price: undefined,
   originalPrice: undefined,
   images: '',
-  description: ''
+  description: '',
 })
 
-const rules = {
-  title: [
-    { required: true, message: '请输入商品标题', trigger: 'blur' },
-    { max: 100, message: '标题不超过100字', trigger: 'blur' }
-  ],
-  category: [{ required: true, message: '请选择分类', trigger: 'change' }],
-  price: [
-    { required: true, message: '请输入价格', trigger: 'blur' },
-    { type: 'number', min: 0.01, message: '价格必须大于0', trigger: 'blur' }
-  ]
+// Image URL previews
+const imageUrls = computed(() => {
+  return form.images
+    ? form.images.split(/[,，]/).map(s => s.trim()).filter(Boolean)
+    : []
+})
+
+function removeImage(idx) {
+  const urls = form.images.split(/[,，]/).map(s => s.trim()).filter(Boolean)
+  urls.splice(idx, 1)
+  form.images = urls.join(', ')
 }
 
-// 从 AI 页跳转回来时填充
+// Pre-fill from AI page
 onMounted(() => {
-  if (route.query.title) {
-    form.title = route.query.title
-  }
-  if (route.query.description) {
-    form.description = route.query.description
-  }
+  if (route.query.title) form.title = route.query.title
+  if (route.query.description) form.description = route.query.description
 })
 
-// ========== 操作 ==========
 async function handleSubmit() {
-  const valid = await formRef.value.validate().catch(() => false)
-  if (!valid) return
+  // Simple validation
+  if (!form.title.trim()) {
+    ElMessage.warning('请输入商品标题')
+    return
+  }
+  if (!form.category) {
+    ElMessage.warning('请选择商品分类')
+    return
+  }
+  if (!form.price || form.price <= 0) {
+    ElMessage.warning('请输入有效价格')
+    return
+  }
 
   submitting.value = true
   try {
     await createProduct({
       ...form,
-      originalPrice: form.originalPrice || undefined
+      originalPrice: form.originalPrice || undefined,
     })
-    ElMessage.success('发布成功')
+    ElMessage.success('发布成功！AI 正在分析商品热度...')
     router.push('/products')
+  } catch {
+    // Error handled by interceptor
   } finally {
     submitting.value = false
   }
 }
 
 function resetForm() {
-  formRef.value.resetFields()
+  form.title = ''
+  form.category = ''
+  form.price = undefined
   form.originalPrice = undefined
+  form.images = ''
+  form.description = ''
 }
 
 function goAI() {
-  router.push({ path: '/ai', query: { title: form.title } })
+  router.push({ path: '/ai', query: { title: form.title, description: form.description } })
 }
 </script>
-
-<style scoped>
-.add-page {
-  min-height: 100vh;
-  background: #f5f7fa;
-}
-
-.add-main {
-  max-width: 720px;
-  margin: 24px auto;
-  padding: 0 20px;
-}
-
-.add-card h2 {
-  font-size: 20px;
-}
-
-.upload-tip {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: #909399;
-  margin-bottom: 8px;
-}
-
-.ai-hint {
-  margin-top: 8px;
-}
-</style>
