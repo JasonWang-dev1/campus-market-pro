@@ -8,7 +8,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/campus_market?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     username: root
-    password: your password
+    password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 10
@@ -47,17 +47,16 @@ jwt:
   secret: WTJNVUtpQ1dXcnBFSDJRT2FQREd5ck5jR3JpdmFISzJNREZFV0dOc0hkaz0=
   expiration: 86400
 
-# ===== AI（商品描述生成，本地模型）=====
+# ===== AI（统一配置，支持 mimo / deepseek / ollama）=====
 ai:
-  api-base-url: http://localhost:11434/v1
-  model: qwen2.5:7b
-  temperature: 0.7
-  max-tokens: 500
-
-# ===== DeepSeek（Agent 智能体规划）=====
-deepseek:
-  api-key: your key
-  api-base-url: https://api.deepseek.com/v1
-  model: deepseek-v4-flash
+  provider: mimo
+  api-key: tp-cfnfg3hukhyk7cdov5dsq9j7v9arn6xyffyffbjahivvl7dj
+  base-url: https://token-plan-cn.xiaomimimo.com/v1
+  model: mimo-v2.5-pro
   temperature: 0.1
   max-tokens: 4096
+  connect-timeout: 30
+  read-timeout: 120
+  retry:
+    max-attempts: 3
+    backoff-ms: 1000
