@@ -8,7 +8,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/campus_market?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     username: root
-    password: 123456
+    password: your password
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 10
@@ -50,7 +50,7 @@ jwt:
 # ===== AI（统一配置，支持 mimo / deepseek / ollama）=====
 ai:
   provider: mimo
-  api-key: tp-cfnfg3hukhyk7cdov5dsq9j7v9arn6xyffyffbjahivvl7dj
+  api-key: your api-key
   base-url: https://token-plan-cn.xiaomimimo.com/v1
   model: mimo-v2.5-pro
   temperature: 0.1
